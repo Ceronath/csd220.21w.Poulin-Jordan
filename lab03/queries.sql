@@ -24,7 +24,7 @@ select productLine, group_concat(productName order by productName asc separator 
 from products						-- Question 5
 group by productLine;
 
-select year(paymentDate) as `Year`, cast(avg(amount) as decimal(10,2)) as `avg payments`, sum(amount) as `total payments`
+select year(paymentDate) as `Year`, round(avg(amount), 2) as `avg payments`, round(sum(amount), 2) as `total payments`
 from payments							-- Question 6
 group by year(paymentDate);
 
