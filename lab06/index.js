@@ -1,5 +1,6 @@
 // TODO: Install and import the argon2 library
 
+import argon2 from 'argon2';
 import promptInit from 'prompt-sync';
 import { DataAccess } from './data.js';
 
@@ -27,9 +28,11 @@ const da = new DataAccess();
             case "a":
                 username = prompt("Add username: ");
                 const password = prompt("Password: ");
+                
+                const hashpw = await hash(password);
 
                 // TODO: Make sure to handle run-time errors properly
-                da.addUser(username, password);  // TODO: Properly hash the password
+                da.addUser(username, hashpw);  // TODO: Properly hash the password
                 console.log("User '" + username + "' was added successfully!");
                 
                 break;
@@ -43,7 +46,7 @@ const da = new DataAccess();
                     const password = prompt("Confirm deletion by entering the user's password: ");
 
                     // TODO: Make sure to handle run-time errors properly
-                    if ( passwordsMatch(password, user.password) ) {
+                    if (await passwordsMatch(password, user.password) ) {
                         da.deleteUser(user.id);
                         console.log("User '" + username + "' was deleted successfully!");
                     } else {
@@ -60,13 +63,19 @@ const da = new DataAccess();
     }
 })();
 
-function hash(password) {
+async function hash(password) {
     // TODO: implement this function using argon2
+    const hashpw = await argon2.hash(password);
+    return hashpw;
 }
 
-function passwordsMatch(userPassword, storedPassword) {
+async function passwordsMatch(userPassword, storedPassword) {
     // TODO: do the password comparison using argon2
-    return userPassword === storedPassword; 
+    if(await argon2.verify(storedPassword,userPassword)){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 function printMenu() {
